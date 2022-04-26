@@ -1,8 +1,9 @@
 import json
-from Country import Country
 import urllib.request
 
 from bs4 import BeautifulSoup
+
+from Country import Country
 
 default_url = "https://www.geonames.org"
 ALPHA2 = 0
