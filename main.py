@@ -37,16 +37,16 @@ def run():
     table = soup.find(id="countries")
     table_rows = table.find_all("tr")
     for tr in table_rows[1:]:
-        tds = tr.find_all("td")
-        name = tds[NAME].a.text
-        alpha2 = tds[ALPHA2].text
-        alpha3 = tds[ALPHA3].text
-        numeric = tds[NUMERIC].text
-        languages = getLanguages(tds[NAME].a.get("href"))
-        capital = tds[CAPITAL].text
-        area = tds[AREA].text
+        tds        = tr.find_all("td")
+        name       = tds[NAME].a.text
+        alpha2     = tds[ALPHA2].text
+        alpha3     = tds[ALPHA3].text
+        numeric    = tds[NUMERIC].text
+        languages  = getLanguages(tds[NAME].a.get("href"))
+        capital    = tds[CAPITAL].text
+        area       = tds[AREA].text
         population = tds[POPULATION].text
-        continent = tds[CONTINENT].text
+        continent  = tds[CONTINENT].text
         countries.append(
             Country(
                 name,
@@ -61,6 +61,7 @@ def run():
             )
         )
 
+    # Generate the JSON file
     json_string = json.dumps(
         countries, default=lambda o: o.__dict__, sort_keys=True, indent=4
     )
