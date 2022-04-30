@@ -37,14 +37,15 @@ def run():
     table = soup.find(id="countries")
     table_rows = table.find_all("tr")
     for tr in table_rows[1:]:
-        tds        = tr.find_all("td")
-        name       = tds[NAME].a.text
-        alpha2     = tds[ALPHA2].text
-        alpha3     = tds[ALPHA3].text
-        numeric    = tds[NUMERIC].text
-        languages  = getLanguages(tds[NAME].a.get("href"))
-        capital    = tds[CAPITAL].text
-        area       = tds[AREA].text
+        tds = tr.find_all("td")
+        name = tds[NAME].a.text
+        print("=> Currently fetching data for: " + name)
+        alpha2 = tds[ALPHA2].text
+        alpha3 = tds[ALPHA3].text
+        numeric = tds[NUMERIC].text
+        languages = getLanguages(tds[NAME].a.get("href"))
+        capital = tds[CAPITAL].text
+        area = tds[AREA].text
         population = tds[POPULATION].text
         continent  = tds[CONTINENT].text
         countries.append(
@@ -67,6 +68,8 @@ def run():
     )
     with open("countries.json", "w") as f:
         f.write(json_string)
+    
+    print("=> Done! :)")
 
 
 if __name__ == "__main__":
