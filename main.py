@@ -1,9 +1,8 @@
 import json
+import threading
 import urllib.request
 
 from bs4 import BeautifulSoup
-
-import threading
 
 from Country import Country
 
@@ -31,6 +30,7 @@ def getLanguages(href):
     languages_data_cell = languages_row.find_all("td")[1]
     return str(languages_data_cell)[4:-5].strip()
 
+
 def fetch(*args):
     countries = args[0]
     result = args[1]
@@ -47,7 +47,7 @@ def fetch(*args):
         capital = tds[CAPITAL].text
         area = tds[AREA].text
         population = tds[POPULATION].text
-        continent  = tds[CONTINENT].text
+        continent = tds[CONTINENT].text
         cs.append(
             Country(
                 name,
@@ -63,6 +63,7 @@ def fetch(*args):
         )
     print(f"{me} done!")
     result.append(cs)
+
 
 def run():
     countries = []
@@ -88,7 +89,7 @@ def run():
     )
     with open("countries.json", "w") as f:
         f.write(json_string)
-    
+
     print("\n\n=> All done! :)")
 
 
