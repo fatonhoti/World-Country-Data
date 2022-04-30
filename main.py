@@ -3,6 +3,8 @@ import urllib.request
 
 from bs4 import BeautifulSoup
 
+import threading
+
 from Country import Country
 
 default_url = "https://www.geonames.org"
@@ -29,14 +31,12 @@ def getLanguages(href):
     languages_data_cell = languages_row.find_all("td")[1]
     return str(languages_data_cell)[4:-5].strip()
 
-
-def run():
-    countries = []
-    html_doc = download(default_url + "/countries/")
-    soup = BeautifulSoup(html_doc, "html.parser")
-    table = soup.find(id="countries")
-    table_rows = table.find_all("tr")
-    for tr in table_rows[1:]:
+def fetch(*args):
+    countries = args[0]
+    result = args[1]
+    me = args[2]
+    cs = []
+    for tr in countries:
         tds = tr.find_all("td")
         name = tds[NAME].a.text
         print("=> Currently fetching data for: " + name)
@@ -48,7 +48,7 @@ def run():
         area = tds[AREA].text
         population = tds[POPULATION].text
         continent  = tds[CONTINENT].text
-        countries.append(
+        cs.append(
             Country(
                 name,
                 alpha2,
@@ -61,6 +61,26 @@ def run():
                 languages,
             )
         )
+    print(f"{me} done!")
+    result.append(cs)
+
+def run():
+    countries = []
+    html_doc = download(default_url + "/countries/")
+    soup = BeautifulSoup(html_doc, "html.parser")
+    table = soup.find(id="countries")
+    table_rows = table.find_all("tr")
+
+    split = (len(table_rows) - 1) // 2
+    t1 = table_rows[1:split]
+    t2 = table_rows[split:]
+    r1 = threading.Thread(target=fetch, args=(t1, countries, "Worker 1"))
+    r2 = threading.Thread(target=fetch, args=(t2, countries, "Worker 2"))
+    r1.start()
+    r2.start()
+    r1.join()
+    r2.join()
+    countries = countries[0] + countries[1]
 
     # Generate the JSON file
     json_string = json.dumps(
@@ -69,7 +89,7 @@ def run():
     with open("countries.json", "w") as f:
         f.write(json_string)
     
-    print("=> Done! :)")
+    print("\n\n=> All done! :)")
 
 
 if __name__ == "__main__":
